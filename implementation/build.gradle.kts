@@ -11,7 +11,7 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation(project(":sdk"))
+                implementation(project(":semconv"))
                 implementation(project(":api-ext"))
                 implementation(project(":sdk"))
                 implementation(project(":model"))

@@ -5,6 +5,7 @@ import io.opentelemetry.kotlin.factory.createSdkFactory
 import io.opentelemetry.kotlin.init.OpenTelemetryConfigDsl
 import io.opentelemetry.kotlin.init.OpenTelemetryConfigImpl
 import io.opentelemetry.kotlin.logging.LoggerProviderImpl
+import io.opentelemetry.kotlin.resource.buildResourceAttributeFactory
 import io.opentelemetry.kotlin.tracing.TracerProviderImpl
 
 /**
@@ -28,9 +29,14 @@ internal fun createOpenTelemetryImpl(
     sdkFactory: SdkFactory,
 ): OpenTelemetry {
     val cfg = OpenTelemetryConfigImpl().apply(config)
-    val tracingConfig = cfg.tracingConfig.generateTracingConfig()
-    val loggingConfig = cfg.loggingConfig.generateLoggingConfig()
     val clock = cfg.clock
+
+    cfg.tracingConfig.resource(null) { buildResourceAttributeFactory().addTo(this) }
+    val tracingConfig = cfg.tracingConfig.generateTracingConfig()
+
+    cfg.loggingConfig.resource(null)  { buildResourceAttributeFactory().addTo(this) }
+    val loggingConfig = cfg.loggingConfig.generateLoggingConfig()
+
     return CloseableOpenTelemetryImpl(
         tracerProvider = TracerProviderImpl(clock, tracingConfig, sdkFactory),
         loggerProvider = LoggerProviderImpl(clock, loggingConfig, sdkFactory),
