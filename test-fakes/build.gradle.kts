@@ -8,6 +8,7 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
+                api(project(":api-ext"))
                 api(project(":sdk"))
                 api(project(":platform-implementations"))
             }
